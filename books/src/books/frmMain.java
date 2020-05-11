@@ -24,9 +24,9 @@ import javax.swing.table.TableModel;
  */
 public class frmMain extends javax.swing.JFrame {
     public Connection getConnection(){
-        Connection con;
+         Connection con;
         try{
-            con = DriverManager.getConnection("jdbc:sqlserver://localhost:1434;databaseName=books;user=sa;password=hancg0257");
+            con = DriverManager.getConnection("jdbc:sqlserver://localhost:1434;databaseName=School_Management;user=sa;password=hancg0257");
             return con;
         }catch(Exception e){
             e.printStackTrace();
@@ -36,16 +36,16 @@ public class frmMain extends javax.swing.JFrame {
     
     public ArrayList<User> getUserList() throws SQLException{
         ArrayList<User> userList = new ArrayList<>();
-        Connection con = getConnection();
-        String query = "Select * from authors";
-        java.sql.Statement st;
+        
+        String query = "Select * from Student";
+        
         ResultSet rs;
-        try{
-            st = con.createStatement();
+        try(Connection con = getConnection();java.sql.Statement st = con.createStatement(); ){
+            
             rs= st.executeQuery(query);
             User user;
             while(rs.next()){
-                user = new User(rs.getInt("authorID"),rs.getString("firstname"),rs.getString("lastName"));
+                user = new User(rs.getString("roll_no"),rs.getString("section"),rs.getString("name_student"),rs.getString("gender"));
                 userList.add(user);
             }
         }catch(Exception ex){
@@ -58,27 +58,29 @@ public class frmMain extends javax.swing.JFrame {
     public void show_user_in_jtable() throws SQLException{
         ArrayList<User> list = getUserList();
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        Object[] row = new Object[3];
+        Object[] row = new Object[4];
         for(int i=0;i<list.size();i++){
-            row[0] = list.get(i).getID();
-            row[1]=list.get(i).getFirstName();
-            row[2]=list.get(i).getLastName();
+            row[0] = list.get(i).getRoll_no();
+            row[1] = list.get(i).getSection();
+            row[2] = list.get(i).getName_student();
+            row[3] = list.get(i).getGender();
+            
             
             model.addRow(row);
         }
+        
+                
     }
     //Execute the sql query
     public void executeSQLquery(String query , String message) throws SQLException{
-        Connection con = getConnection();
-        java.sql.Statement st;
-        try{
-            st = con.createStatement();
+        
+         
+        try(Connection con = getConnection();java.sql.Statement st = con.createStatement();){
+            
             if((st.executeUpdate(query)) == 1){
                 
                 //refresh jtable  data
-                //DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                //model.setRowCount(0);
-                //show_user_in_jtable();
+                
                 
                 JOptionPane.showMessageDialog(null,"Data "+message+" Successfully");
             }else{
@@ -87,6 +89,10 @@ public class frmMain extends javax.swing.JFrame {
         }catch(Exception e){
             e.printStackTrace();
         }
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+        show_user_in_jtable();
+        
     }
     /**
      * Creates new form frmMain
@@ -119,10 +125,12 @@ public class frmMain extends javax.swing.JFrame {
         btnInsert = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
+        txtQuery4 = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("ID");
+        jLabel1.setText("roll_no");
 
         btnRun.setText("Run");
         btnRun.addActionListener(new java.awt.event.ActionListener() {
@@ -140,7 +148,7 @@ public class frmMain extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "firstName", "lastName"
+                "roll_no", "section", "name_student", "gender"
             }
         ));
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -157,9 +165,9 @@ public class frmMain extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("firstName");
+        jLabel2.setText("section");
 
-        jLabel3.setText("lastName");
+        jLabel3.setText("name");
 
         btnInsert.setText("Insert");
         btnInsert.addActionListener(new java.awt.event.ActionListener() {
@@ -182,6 +190,14 @@ public class frmMain extends javax.swing.JFrame {
             }
         });
 
+        txtQuery4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtQuery4ActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("gender");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -195,13 +211,16 @@ public class frmMain extends javax.swing.JFrame {
                         .addComponent(txtQuery, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 554, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtQuery1, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtQuery2, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtQuery1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                            .addComponent(txtQuery2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                            .addComponent(txtQuery4))))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(26, 26, 26)
@@ -229,18 +248,6 @@ public class frmMain extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnRun, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnSelect))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnInsert)
-                            .addComponent(btnUpdate))
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 528, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtQuery))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -251,8 +258,25 @@ public class frmMain extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtQuery2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(28, 28, 28)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 527, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtQuery4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4))
+                        .addGap(29, 29, 29))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnRun, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnSelect))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnInsert)
+                            .addComponent(btnUpdate))
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete)
+                        .addGap(62, 62, 62)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1)))
         );
 
         pack();
@@ -281,24 +305,15 @@ public class frmMain extends javax.swing.JFrame {
             }
             results.append("\n");
             //  Metadata
-            ArrayList<User> list = new ArrayList<>();
+           
             while (rs.next()) {
-                User user = new User(rs.getInt("authorID"),rs.getString("firstName"),rs.getString("lastName"));
-                list.add(user);
+                
                 for (int i = 1; i <= numberOfColumns; i++) {
                     results.append(rs.getObject(i)).append("\t");
                 }
                 results.append("\n");
             }
-            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        Object[] row = new Object[3];
-        for(int i=0;i<list.size();i++){
-            row[0] = list.get(i).getID();
-            row[1]=list.get(i).getFirstName();
-            row[2]=list.get(i).getLastName();
-            
-           model.addRow(row);
-        }   
+           
             txtResult.setText(results.toString());
         } // Handle any errors that may have occurred.
         catch (SQLException e) {            
@@ -308,6 +323,8 @@ public class frmMain extends javax.swing.JFrame {
 
     private void btnSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectActionPerformed
         try {
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.setRowCount(0);
             show_user_in_jtable();
         } catch (SQLException ex) {
             Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
@@ -321,10 +338,11 @@ public class frmMain extends javax.swing.JFrame {
         txtQuery.setText(model.getValueAt(i,0).toString());
         txtQuery1.setText(model.getValueAt(i,1).toString());
         txtQuery2.setText(model.getValueAt(i,2).toString());
+        txtQuery4.setText(model.getValueAt(i,3).toString());
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
-        String query = "insert into authors(authorID,firstName,lastName) values("+txtQuery.getText()+",'"+txtQuery1.getText()+"','"+txtQuery2.getText()+"')";
+        String query = "insert into Student(roll_no,section,name_student,gender) values('"+txtQuery.getText()+"','"+txtQuery1.getText()+"','"+txtQuery2.getText()+"','"+txtQuery4.getText()+"')";
         try {
             executeSQLquery(query,"Insert");
         } catch (SQLException ex) {
@@ -333,12 +351,29 @@ public class frmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_btnInsertActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        // TODO add your handling code here:
+        String query="UPDATE Student SET  section ='"+txtQuery.getText()+"', name_student='"+txtQuery2.getText()+"', gender='"+txtQuery4.getText()+"' WHERE roll_no = '"+txtQuery.getText()+"'";
+       /* String query="update student" +
+"  SET roll_no = 'BABAUN15234'" +
+"  WHERE roll_no = 'BABAIU15234'";*/
+        try {
+            executeSQLquery(query,"Update");
+        } catch (SQLException ex) {
+            Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
+        String query = "delete from student where roll_no='"+txtQuery.getText()+"'";
+        try {
+            executeSQLquery(query,"Delete");
+        } catch (SQLException ex) {
+            Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void txtQuery4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtQuery4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtQuery4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -385,12 +420,14 @@ public class frmMain extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField txtQuery;
     private javax.swing.JTextField txtQuery1;
     private javax.swing.JTextField txtQuery2;
+    private javax.swing.JTextField txtQuery4;
     private javax.swing.JTextArea txtResult;
     // End of variables declaration//GEN-END:variables
 }

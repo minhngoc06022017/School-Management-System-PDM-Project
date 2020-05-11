@@ -11,37 +11,48 @@ package books;
  * @author TripleB
  */
 class User {
-    private int ID;
-    private String firstName,lastName;
     
-    public User(int ID , String firstName ,String lastName){
-        this.ID=ID;
-        this.firstName=firstName;
-        this.lastName=lastName;
+    private String  roll_no,section,name_student,gender;
+    
+    public User(String roll_no , String section ,String name_student,String gender){
+        this.roll_no=roll_no;
+        this.section=section;
+        this.name_student=name_student;
+        this.gender=gender;
     }
 
-    public int getID() {
-        return ID;
+    public String getRoll_no() {
+        return roll_no;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
+    public void setRoll_no(String roll_no) {
+        this.roll_no = roll_no;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getSection() {
+        return section;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setSection(String section) {
+        this.section = section;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getName_student() {
+        return name_student;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName_student(String name_student) {
+        this.name_student = name_student;
     }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    
     
 }
