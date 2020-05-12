@@ -76,7 +76,7 @@ public class Teach extends javax.swing.JFrame {
         try(Connection con = getConnection();java.sql.Statement st = con.createStatement();){
             
             if((st.executeUpdate(query)) == 1){
-                
+                System.out.println(st.executeUpdate(query));
                 //refresh jtable  data
                 
                 
@@ -127,6 +127,12 @@ public class Teach extends javax.swing.JFrame {
         jLabel1.setText("Id_staff");
 
         jLabel2.setText("Subject_code");
+
+        _textId.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                _textIdActionPerformed(evt);
+            }
+        });
 
         _selectButton.setText("Select");
         _selectButton.addActionListener(new java.awt.event.ActionListener() {
@@ -251,14 +257,12 @@ public class Teach extends javax.swing.JFrame {
     }//GEN-LAST:event__homeButtonActionPerformed
 
     private void _updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__updateButtonActionPerformed
-        String query="UPDATE teach SET  subject_code='"+_textSubject.getText()+"' WHERE id_staff = '"+_textId.getText()+"'";
-       /* String query="update student" +
-"  SET roll_no = 'BABAUN15234'" +
-"  WHERE roll_no = 'BABAIU15234'";*/
+        String query="UPDATE Teach SET subject_code = '"+_textSubject.getText()+"' ,id_staff = '"+_textId.getText()+"' WHERE id_staff = '"+_textId.getText()+"' AND subject_code = '"+_textSubject.getText()+"'";
+       
         try {
             executeSQLquery(query,"Update");
         } catch (SQLException ex) {
-            Logger.getLogger(Student.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Teach5.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event__updateButtonActionPerformed
 
@@ -268,7 +272,7 @@ public class Teach extends javax.swing.JFrame {
             model.setRowCount(0);
             show_user_in_jtable();
         } catch (SQLException ex) {
-            Logger.getLogger(Student.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Teach5.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event__selectButtonActionPerformed
 
@@ -285,18 +289,22 @@ public class Teach extends javax.swing.JFrame {
         try {
             executeSQLquery(query,"Insert");
         } catch (SQLException ex) {
-            Logger.getLogger(Student.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Teach5.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event__insertButtonActionPerformed
 
     private void _deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__deleteButtonActionPerformed
-       String query = "delete from teach where id_staff='"+_textId.getText()+"'";
+       String query = "delete from teach where id_staff='"+_textId.getText()+"' AND subject_code='"+_textSubject.getText()+"'"  ;
         try {
             executeSQLquery(query,"Delete");
         } catch (SQLException ex) {
-            Logger.getLogger(Student.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Teach5.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event__deleteButtonActionPerformed
+
+    private void _textIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__textIdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event__textIdActionPerformed
 
     /**
      * @param args the command line arguments

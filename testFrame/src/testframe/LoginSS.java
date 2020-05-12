@@ -102,7 +102,7 @@ public class LoginSS extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void _continueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__continueButtonActionPerformed
-        test t = new test();
+        test t = new test(1);
         t.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event__continueButtonActionPerformed

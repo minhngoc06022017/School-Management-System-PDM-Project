@@ -1,5 +1,18 @@
 package testframe;
 
+import TableObject.Student1;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -11,16 +24,89 @@ package testframe;
  * @author TripleB
  */
 public class test extends javax.swing.JFrame {
-
+    
+    public String _idViewr ="";
     /**
      * Creates new form test
      */
     public test() {
         initComponents();
+        System.out.println(_tableInfo.getColumnCount());
     }
     public test(int i) {
         initComponents();
         _adminPanel.remove(jPanel2);
+        
+    }
+    public Connection getConnection(){
+         Connection con;
+        try{
+            con = DriverManager.getConnection("jdbc:sqlserver://localhost:1434;databaseName=School_Management1;user=sa;password=hancg0257");
+            return con;
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public ArrayList<Student1> getUserList(String query) throws SQLException{
+        ArrayList<Student1> studentList = new ArrayList<>();
+        
+        
+        
+        ResultSet rs;
+        try(Connection con = getConnection();java.sql.Statement st = con.createStatement(); ){
+            
+            rs= st.executeQuery(query);
+            Student1 student;
+            while(rs.next()){
+                student = new Student1(rs.getString("roll_no"),rs.getString("section"),rs.getString("name_student"),rs.getString("gender"),rs.getString("tuition_id"));
+                studentList.add(student);
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return studentList;
+    }
+
+    //Display Data in table
+    public void show_user_in_jtable(String query) throws SQLException{
+        
+        ArrayList<Student1> list = getUserList(query);
+        DefaultTableModel model = (DefaultTableModel) _tableInfo.getModel();
+        model.setRowCount(0);
+        Object[] row = new Object[4];
+        for(int i=0;i<list.size();i++){
+            row[0] = list.get(i).getRoll_no();
+            row[1] = list.get(i).getSection();
+            row[2] = list.get(i).getName_student();
+            row[3] = list.get(i).getGender();
+            model.addRow(row);
+        }
+        
+                
+    }
+    //Execute the sql query
+    public void executeSQLquery(String query , String message) throws SQLException{
+        
+         
+        try(Connection con = getConnection();java.sql.Statement st = con.createStatement();){
+            
+            if((st.executeUpdate(query)) == 1){
+                
+                //refresh jtable  data
+                
+                
+                JOptionPane.showMessageDialog(null,"Data "+message+" Successfully");
+            }else{
+                JOptionPane.showMessageDialog(null,"Data not "+message);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        
+        
+        
     }
 
     /**
@@ -38,12 +124,12 @@ public class test extends javax.swing.JFrame {
         _comboTables = new javax.swing.JComboBox<>();
         _selectTableButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        _textSearch = new javax.swing.JTextField();
+        _textName = new javax.swing.JTextField();
         _clearButoon = new javax.swing.JButton();
         _searchButton = new javax.swing.JButton();
         _comboJob = new javax.swing.JComboBox<>();
         _comboSex = new javax.swing.JComboBox<>();
-        _comboIden = new javax.swing.JComboBox<>();
+        _comboMajor = new javax.swing.JComboBox<>();
         _comboSection = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         _tableInfo = new javax.swing.JTable();
@@ -52,6 +138,7 @@ public class test extends javax.swing.JFrame {
         _salaryButton = new javax.swing.JButton();
         _tuitionButton = new javax.swing.JButton();
         _scheduleButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -93,16 +180,26 @@ public class test extends javax.swing.JFrame {
         _adminPanel.addTab("Admin", jPanel2);
 
         _clearButoon.setText("Clear");
+        _clearButoon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                _clearButoonActionPerformed(evt);
+            }
+        });
 
         _searchButton.setText("Search");
+        _searchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                _searchButtonActionPerformed(evt);
+            }
+        });
 
-        _comboJob.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Student", "Teacher", "None", " " }));
+        _comboJob.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Student", "Teacher", " ", " " }));
 
-        _comboSex.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Male", "Female", "None", " " }));
+        _comboSex.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "Male", "Female", " " }));
 
-        _comboIden.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "Name", "None" }));
+        _comboMajor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "BA", "IT", "EE", "BT" }));
 
-        _comboSection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "K15", "K16", "K17", "K18", "K19", "K20", "None" }));
+        _comboSection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "K15", "K16", "K17", "K18", "K19", "K20", " " }));
         _comboSection.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _comboSectionActionPerformed(evt);
@@ -114,18 +211,36 @@ public class test extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Roll no", "Section", "Name student", "Gender"
             }
         ));
+        _tableInfo.setEnabled(false);
+        _tableInfo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                _tableInfoMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(_tableInfo);
 
         _selectButton.setText("Select");
+        _selectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                _selectButtonActionPerformed(evt);
+            }
+        });
 
         _salaryButton.setText("Salary");
 
         _tuitionButton.setText("Tuition");
 
         _scheduleButton.setText("Schedule");
+        _scheduleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                _scheduleButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Name");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -144,25 +259,26 @@ public class test extends javax.swing.JFrame {
                             .addComponent(_textSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 700, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(43, 43, 43)
                             .addComponent(_selectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 850, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(_textSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 700, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(26, 26, 26))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                     .addComponent(_comboJob, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(122, 122, 122)
                                     .addComponent(_comboSex, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(_comboIden, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(119, 119, 119)))
+                                    .addGap(125, 125, 125)
+                                    .addComponent(_comboMajor, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(27, 27, 27)
+                                    .addComponent(_textName, javax.swing.GroupLayout.PREFERRED_SIZE, 575, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGap(26, 26, 26)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(_comboSection, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                     .addComponent(_clearButoon)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(_searchButton))))))
+                                    .addComponent(_searchButton))))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 846, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -170,22 +286,23 @@ public class test extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(_textSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(_textName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(_clearButoon)
-                    .addComponent(_searchButton))
+                    .addComponent(_searchButton)
+                    .addComponent(jLabel1))
                 .addGap(38, 38, 38)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(_comboJob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(_comboSex, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(_comboIden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(_comboMajor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(_comboSection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(36, 36, 36)
+                .addGap(34, 34, 34)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(_textSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(_selectButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(_salaryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(_tuitionButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -250,6 +367,94 @@ public class test extends javax.swing.JFrame {
         }
     }//GEN-LAST:event__selectTableButtonActionPerformed
 
+    private void _clearButoonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__clearButoonActionPerformed
+        _comboSex.setSelectedIndex(2);
+        _comboMajor.setSelectedIndex(2);
+        _comboJob.setSelectedIndex(2);
+        _comboSection.setSelectedIndex(6);
+    }//GEN-LAST:event__clearButoonActionPerformed
+
+    private void _searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__searchButtonActionPerformed
+        String sex,major,name;
+        String[] arrayQuery = new String[10];
+        int i=0;
+        if(_comboSex.getSelectedIndex()!=0){
+             sex = "gender='"+_comboSex.getItemAt(_comboSex.getSelectedIndex())+"'";
+             arrayQuery[i]=sex;
+             i++;
+             
+        } 
+        
+        //System.out.println(sex);
+        if(_comboMajor.getSelectedIndex()!=0){
+             major="section='"+_comboMajor.getItemAt(_comboMajor.getSelectedIndex())+"'";
+             arrayQuery[i]=major;
+             i++;
+        }           
+         
+        //System.out.println(classInfo);
+                    
+        if(!_textName.equals("")){
+            name="name_student like '%"+_textName.getText()+"%'";
+            arrayQuery[i]=name;
+            i++;
+        }
+        
+        if(_comboJob.getSelectedIndex()==1){
+        _tableInfo.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Teacher_ID", "Name","Sex"
+            }
+        ));
+        System.out.println(_tableInfo.getColumnCount());
+        }else{
+        _tableInfo.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Roll no", "Section", "Name student", "Gender"
+            }
+        ));
+        String query="Select * from Student where  ";
+        for(int j=0;j<i;j++){
+            if(j==0){
+                query+=arrayQuery[j];
+            }else{
+                query+=" and " + arrayQuery[j];
+            }
+        }
+            System.out.println(i);
+            System.out.println(query);
+            try {
+                show_user_in_jtable(query);
+            } catch (SQLException ex) {
+                Logger.getLogger(test.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+        }
+        
+        
+    }//GEN-LAST:event__searchButtonActionPerformed
+
+    private void _selectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__selectButtonActionPerformed
+       
+    }//GEN-LAST:event__selectButtonActionPerformed
+
+    private void _tableInfoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event__tableInfoMouseClicked
+        int i = _tableInfo.getSelectedRow();
+        TableModel model = _tableInfo.getModel();
+        _textSelect.setText(model.getValueAt(i,0).toString());
+        
+    }//GEN-LAST:event__tableInfoMouseClicked
+
+    private void _scheduleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__scheduleButtonActionPerformed
+        
+    }//GEN-LAST:event__scheduleButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -288,8 +493,8 @@ public class test extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane _adminPanel;
     private javax.swing.JButton _clearButoon;
-    private javax.swing.JComboBox<String> _comboIden;
     private javax.swing.JComboBox<String> _comboJob;
+    private javax.swing.JComboBox<String> _comboMajor;
     private javax.swing.JComboBox<String> _comboSection;
     private javax.swing.JComboBox<String> _comboSex;
     private javax.swing.JComboBox<String> _comboTables;
@@ -299,12 +504,14 @@ public class test extends javax.swing.JFrame {
     private javax.swing.JButton _selectButton;
     private javax.swing.JButton _selectTableButton;
     private javax.swing.JTable _tableInfo;
-    private javax.swing.JTextField _textSearch;
+    private javax.swing.JTextField _textName;
     private javax.swing.JTextField _textSelect;
     private javax.swing.JButton _tuitionButton;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
+

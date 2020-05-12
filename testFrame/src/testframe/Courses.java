@@ -282,7 +282,7 @@ public class Courses extends javax.swing.JFrame {
     }//GEN-LAST:event__deleteButtonActionPerformed
 
     private void _updatebButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__updatebButtonActionPerformed
-       String query="UPDATE course SET  subject_code ='"+_textSubject.getText()+"', name_subject='"+_textName.getText()+"', credit="+_textCredit.getText();
+       String query="UPDATE course SET  name_subject='"+_textName.getText()+"', credit="+_textCredit.getText()+"WHERE subject_code = '"+_textSubject.getText()+"'";
        /* String query="update student" +
 "  SET roll_no = 'BABAUN15234'" +
 "  WHERE roll_no = 'BABAIU15234'";*/

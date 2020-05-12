@@ -5,11 +5,28 @@
  */
 package testframe;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.naming.spi.DirStateFactory;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author TripleB
  */
 public class LoginAdmin extends javax.swing.JFrame {
+    public Connection getConnection(){
+         Connection con;
+        try{
+            con = DriverManager.getConnection("jdbc:sqlserver://localhost:1434;databaseName=School_Management1;user=sa;password=hancg0257");
+            return con;
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * Creates new form LoginAdmin
@@ -30,10 +47,10 @@ public class LoginAdmin extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        _textName = new javax.swing.JTextField();
         _continueButton = new javax.swing.JButton();
         _backButton = new javax.swing.JButton();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        _textPass = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -72,11 +89,9 @@ public class LoginAdmin extends javax.swing.JFrame {
                             .addComponent(jLabel2))
                         .addGap(39, 39, 39)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(_textName, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(_textPass, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(159, 159, 159)
@@ -94,11 +109,11 @@ public class LoginAdmin extends javax.swing.JFrame {
                 .addGap(32, 32, 32)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(_textName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(55, 55, 55)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(_textPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
                 .addComponent(_continueButton)
                 .addGap(33, 33, 33)
@@ -114,7 +129,21 @@ public class LoginAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event__backButtonActionPerformed
 
     private void _continueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__continueButtonActionPerformed
-        test t = new test(1);
+        /*try(Connection con = getConnection();){
+            String sql = "Select * from admin where username=? and password=?";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1,_textName.getText());
+            pst.setString(2,_textPass.getText());
+            ResultSet rs = pst.executeQuery();
+            if(rs.next()){
+                JOptionPane.showMessageDialog(null,"Username and Password Matched");
+            }else{
+                JOptionPane.showMessageDialog(null,"Username and Password Does Not Match");
+            }
+        }catch(Exception e){
+            
+        }*/
+        test t = new test();
         t.setVisible(true);
         this.setVisible(false);
         
@@ -158,10 +187,10 @@ public class LoginAdmin extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton _backButton;
     private javax.swing.JButton _continueButton;
+    private javax.swing.JTextField _textName;
+    private javax.swing.JPasswordField _textPass;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }

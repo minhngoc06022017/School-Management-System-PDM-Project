@@ -109,6 +109,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="_textId">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_textIdActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="_textSubject">
     </Component>
