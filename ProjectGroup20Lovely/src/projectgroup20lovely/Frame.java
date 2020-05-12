@@ -252,10 +252,10 @@ public class Frame extends JFrame {
                      Logger.getLogger(ProjectGroup20Lovely.class.getName()).log(Level.SEVERE, null, ex);
                  }
                     
-<<<<<<< HEAD:ProjectGroup20Lovely/src/projectgroup20lovely/Frame.java
+
                     JOptionPane.showMessageDialog(new Frame(),info,"TUITION FEE",JOptionPane.INFORMATION_MESSAGE);
-=======
->>>>>>> 1591192b72147e17aa551e848d6f16fe587ef76f:ProjectGroup20Lovely/src/projectgroup20lovely/ProjectGroup20Lovely.java
+
+
                     
         }
        }); 

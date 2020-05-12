@@ -71,6 +71,8 @@ CONSTRAINT FK_StudentStudy
 FOREIGN KEY (roll_no) REFERENCES Student(roll_no) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+
+
 INSERT INTO Course VALUES('IT01IU','Principle Database Management',2);
 INSERT INTO Course VALUES('IT02IU','Principle Database Management LAB',2);
 INSERT INTO Course VALUES('IT03IU','Web Development',2);
